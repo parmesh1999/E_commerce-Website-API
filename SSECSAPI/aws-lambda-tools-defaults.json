@@ -1,0 +1,21 @@
+
+{
+    "region" : "eu-north-1",
+    "profile" : "profile",
+    "configuration" : "Release",
+    "framework"     : "net8.0",
+    "function-name" : "MyFunction",
+    "function-description" : "",
+    "package-type"         : "Zip",
+    "function-handler"     : "SSECSAPI",
+    "function-memory-size" : 512,
+    "function-role"        : "arn:aws:iam::650358925379:role/service-role/MyFunction-role-wq7bnx4a",
+    "function-timeout"     : 15,
+    "function-runtime"     : "dotnet8",
+    "function-architecture" : "x86_64",
+    "function-subnets"      : "",
+    "function-security-groups" : "",
+    "tracing-mode"             : "PassThrough",
+    "environment-variables"    : "",
+    "image-tag"                : ""
+}

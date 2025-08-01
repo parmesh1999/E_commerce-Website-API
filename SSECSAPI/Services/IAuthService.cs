@@ -6,5 +6,7 @@ namespace SSECSAPI.Services
     {
         AuthResponse Authenticate(Login model);
         string Register(Signup model);
+       
+
     }
 }

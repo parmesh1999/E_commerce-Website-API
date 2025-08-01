@@ -120,10 +120,10 @@ namespace SSECSAPI.Migrations
                 columns: new[] { "Id", "Email", "Mobile", "Name", "Password" },
                 values: new object[,]
                 {
-                    { 1, "anil@gmail.com", 9876543210L, "Anil", "Test@123" },
-                    { 2, "parmesh@gmail.com", 8917653922L, "Parmesh", "Test@123" },
-                    { 3, "smruti@gmail.com", 8547963213L, "Smruti", "Test@123" },
-                    { 4, "manas@gmail.com", 8569321441L, "Manas", "Test@123" }
+                    { 1, "anil@gmail.com", 9876543210L, "Anil", "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg." },
+                    { 2, "parmesh@gmail.com", 8917653922L, "Parmesh", "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg." },
+                    { 3, "smruti@gmail.com", 8547963213L, "Smruti", "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg." },
+                    { 4, "manas@gmail.com", 8569321441L, "Manas", "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg." }
                 });
         }
 

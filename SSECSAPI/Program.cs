@@ -32,11 +32,23 @@ builder.Services.AddScoped<IUserRole, UserRoleRepo>();
 builder.Services.AddScoped<ICategory, CategoryRepo>();
 builder.Services.AddScoped<IRating, RatingRepo>();
 builder.Services.AddScoped<IOrderStatus, OrderStatusRepo>();
+builder.Services.AddScoped<ICustomer, CustomerRepo>();
 
+//mailing function
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 // Add services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+//AWS lambda hosting
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
+
+
 
 //CORS Service
 builder.Services.AddCors(options =>
@@ -71,6 +83,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//changing port no for own required
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(7000); // Change this to your desired port
+});
+
 
 
 var app = builder.Build();
@@ -81,6 +99,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 //CORS Middleware
 app.UseCors("AllowAll");

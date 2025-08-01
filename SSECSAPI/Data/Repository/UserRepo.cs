@@ -1,28 +1,36 @@
 ﻿using SSECSAPI.Data.Interface;
 using SSECSAPI.Models;
+using SSECSAPI.Services;
 
 namespace SSECSAPI.Data.Repository
 {
     public class UserRepo : IUser
     {
-        public AppDbContext _context;
-        public UserRepo(AppDbContext context) 
-        { 
+        private readonly AppDbContext _context;
+        private readonly IEmailService _emailService;
+
+        public UserRepo(AppDbContext context, IEmailService emailService)
+        {
             _context = context;
+            _emailService = emailService;
         }
+
         public string AddUser(User user)
         {
+            // Hash the password before saving
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
             _context.Users.Add(user);
             _context.SaveChanges();
             return "User Added Successfully!";
         }
 
-        public String DeleteUser(int id)
+        public string DeleteUser(int id)
         {
-            User _user = _context.Users.Find(id);
-            if (_user != null)
+            var user = _context.Users.Find(id);
+            if (user != null)
             {
-                _context.Users.Remove(_user);
+                _context.Users.Remove(user);
                 _context.SaveChanges();
                 return "User Deleted successfully!";
             }
@@ -39,10 +47,42 @@ namespace SSECSAPI.Data.Repository
             return _context.Users.Find(id);
         }
 
-        public String UpdateUser(User user)
+        public string UpdateUser(User user)
         {
-            _context.Users.Update(user);
+            // Hash the password again only if it is changed (you can adjust this logic)
+            var existingUser = _context.Users.Find(user.Id);
+            if (existingUser == null)
+            {
+                return "User not found!";
+            }
+
+            existingUser.Name = user.Name;
+            existingUser.Mobile = user.Mobile;
+            existingUser.Email = user.Email;
+
+            // Re-hash only if password changed
+            if (!BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password))
+            {
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            }
+
+            _context.Users.Update(existingUser);
             _context.SaveChanges();
+
+            //Emailing Function
+            // ✅ Send welcome email
+            string subject = "Update Your Profile!";
+            string body = $@"
+            <h2>Hello {user.Name},</h2>
+            <p>Thank you for updating your profile.</p>
+            <p>We're glad to have you on board.</p>
+            <br/>
+            <strong>Password:</strong> {user.Password}
+            <br/>
+            <p>Regards,<br/>SSECS Team</p>";
+
+            _emailService.SendEmailAsync(user.Email, subject, body);
+
             return "User Updated Successfully!";
         }
     }

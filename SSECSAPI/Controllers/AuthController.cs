@@ -7,10 +7,13 @@ using SSECSAPI.Services;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IEmailService _emailService;
+    
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IEmailService emailService)
     {
         _authService = authService;
+        _emailService = emailService;
     }
 
     [HttpPost("login")]
@@ -36,4 +39,14 @@ public class AuthController : ControllerBase
 
         return Ok(new { Message = message });
     }
+
+    //Tasting Email function
+    //[HttpPost("send")]
+    //public async Task<IActionResult> Send([FromQuery] string to, [FromQuery] string subject, [FromQuery] string body)
+    //{
+    //    await _emailService.SendEmailAsync(to, subject, body);
+    //    return Ok("Email sent successfully!");
+    //}
+
+
 }

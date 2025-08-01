@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Google.Apis.Auth;
+using Microsoft.Extensions.Options;
 using SSECSAPI.Data;
 using SSECSAPI.DTO;
 using SSECSAPI.Helpers;
@@ -9,23 +10,26 @@ public class AuthService : IAuthService
 {
     private readonly JwtSettings _jwtSettings;
     private readonly AppDbContext _context;
+    private readonly IEmailService _emailService;
+   
 
-    public AuthService(IOptions<JwtSettings> options, AppDbContext context)
+    public AuthService(IOptions<JwtSettings> options, AppDbContext context, IEmailService emailService)
     {
         _jwtSettings = options.Value;
         _context = context;
+        _emailService = emailService;
+        
     }
 
     public AuthResponse Authenticate(Login model)
     {
-        var user = _context.Users
-            .FirstOrDefault(u => u.Email == model.Username && u.Password == model.Password);
+        var user = _context.Users.FirstOrDefault(u => u.Email == model.Username);
 
-        if (user == null)
+        if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
         {
             return new AuthResponse
             {
-                StatusCode = "404"
+                StatusCode = "401"
             };
         }
 
@@ -34,7 +38,6 @@ public class AuthService : IAuthService
         {
             var role = _context.Roles.FirstOrDefault(r => r.Id == userRole.RoleId);
             var token = JwtTokenGenerator.GenerateToken(user.Email, _jwtSettings);
-
             return new AuthResponse
             {
                 Token = token,
@@ -50,8 +53,8 @@ public class AuthService : IAuthService
                 StatusCode = "403"
             };
         }
-        
     }
+
     public string Register(Signup model)
     {
         var existingUser = _context.Users.FirstOrDefault(u => u.Email == model.Email);
@@ -65,21 +68,28 @@ public class AuthService : IAuthService
             Name = model.Name,
             Mobile = model.Mobile,
             Email = model.Email,
-            Password = model.Password // 🔐 In production, hash the password
+            Password = BCrypt.Net.BCrypt.HashPassword(model.Password)
         };
 
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        //var userRole = new UserRole
-        //{
-        //    UserId = user.Id,
-        //    RoleId = model.RoleId
-        //};
+        // ✅ Send welcome email
+        string subject = "Welcome to SSECS!";
+        string body = $@"
+        <h2>Hello {user.Name},</h2>
+        <p>Thank you for registering with SSECS.</p>
+        <p>We're glad to have you on board.</p>
+        <br/>
+        <strong>Login Email:</strong> {user.Email}
+        <br/>
+        <strong>Password:</strong> {user.Password}
+        <br/>
+        <p>Regards,<br/>SSECS Team</p>";
 
-        //_context.UserRoles.Add(userRole);
-        //_context.SaveChanges();
+        _emailService.SendEmailAsync(user.Email, subject, body);
 
-        return "Registration successful.";
+        return "User registered and welcome email sent.";
+
     }
 }

@@ -11,8 +11,8 @@ using SSECSAPI.Data;
 namespace SSECSAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250723062238_initialcommit")]
-    partial class initialcommit
+    [Migration("20250728061020_Customertable")]
+    partial class Customertable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,38 @@ namespace SSECSAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("SSECSAPI.Models.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Mobile")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("SSECSAPI.Models.OrderStatus", b =>
@@ -143,7 +175,7 @@ namespace SSECSAPI.Migrations
                             Email = "anil@gmail.com",
                             Mobile = 9876543210L,
                             Name = "Anil",
-                            Password = "Test@123"
+                            Password = "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg."
                         },
                         new
                         {
@@ -151,7 +183,7 @@ namespace SSECSAPI.Migrations
                             Email = "parmesh@gmail.com",
                             Mobile = 8917653922L,
                             Name = "Parmesh",
-                            Password = "Test@123"
+                            Password = "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg."
                         },
                         new
                         {
@@ -159,7 +191,7 @@ namespace SSECSAPI.Migrations
                             Email = "smruti@gmail.com",
                             Mobile = 8547963213L,
                             Name = "Smruti",
-                            Password = "Test@123"
+                            Password = "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg."
                         },
                         new
                         {
@@ -167,7 +199,7 @@ namespace SSECSAPI.Migrations
                             Email = "manas@gmail.com",
                             Mobile = 8569321441L,
                             Name = "Manas",
-                            Password = "Test@123"
+                            Password = "$2a$12$pWBIMVE9S5PlqBcs9cXfk.LRayoP7HlUa7e66JMRfEufI3Dmd3yg."
                         });
                 });
 
